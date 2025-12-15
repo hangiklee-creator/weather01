@@ -15,11 +15,11 @@ const AdBanner = ({ weather, t, lang }) => {
     // 4. Generate & Copy the 'Tracking Link' (s.click...)
     // -------------------------------------------------------------------------
     const AFFILIATE_LINKS = {
-        default: "https://www.aliexpress.com/wholesale?SearchText=best+sellers", // Default (Best Sellers)
-        rain: "https://www.aliexpress.com/wholesale?SearchText=umbrella",        // Rain (Umbrella)
-        cold: "https://www.aliexpress.com/wholesale?SearchText=winter+jacket",   // Cold (Jackets)
-        hot: "https://www.aliexpress.com/wholesale?SearchText=portable+fan",     // Hot (Fans)
-        wind: "https://www.aliexpress.com/wholesale?SearchText=windbreaker"      // Wind (Windbreaker)
+        default: "https://s.click.aliexpress.com/e/_c2vo8gil", // Default (Best Sellers)
+        rain: "https://s.click.aliexpress.com/e/_c36F7ogh",        // Rain (Umbrella)
+        cold: "https://s.click.aliexpress.com/e/_c3lQLTTx",   // Cold (Jackets)
+        hot: "https://s.click.aliexpress.com/e/_c4LjoGfX",     // Hot (Fans)
+        wind: "https://s.click.aliexpress.com/e/_c2vbBt09"      // Wind (Windbreaker)
     };
 
     // Contextual Logic

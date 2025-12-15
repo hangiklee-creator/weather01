@@ -8,6 +8,7 @@ import Alerts from './components/Alerts';
 import AdBanner from './components/AdBanner';
 import Astronomy from './components/Astronomy';
 import { weatherService } from './api/weather';
+import { Helmet } from 'react-helmet-async';
 
 const translations = {
   en: {
