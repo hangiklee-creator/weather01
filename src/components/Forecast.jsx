@@ -128,8 +128,8 @@ const Forecast = ({ data, unit, lang, t }) => {
                                 style={{ width: '40px', height: '40px' }}
                             />
                             <div style={{ display: 'flex', gap: '8px', fontSize: '1.1rem' }}>
-                                <span style={{ fontWeight: 'bold' }}>{displayTemp(item.max)}°</span>
                                 <span style={{ opacity: 0.6 }}>{displayTemp(item.min)}°</span>
+                                <span style={{ fontWeight: 'bold' }}>{displayTemp(item.max)}°</span>
                             </div>
                         </div>
                     );
