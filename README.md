@@ -1,4 +1,5 @@
-# React + Vite
+# React Weather App 🌦️
+*(Last Updated: Redeploy Trigger for API Key Fix)*
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
