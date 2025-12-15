@@ -4,6 +4,8 @@ import SearchBar from './components/SearchBar';
 import CurrentWeather from './components/CurrentWeather';
 import Forecast from './components/Forecast';
 import WeatherMap from './components/WeatherMap';
+import Alerts from './components/Alerts';
+import Astronomy from './components/Astronomy';
 import { weatherService } from './api/weather';
 
 const translations = {
@@ -18,13 +20,18 @@ const translations = {
     feels_like: 'Feels Like',
     aqi: 'AQI',
     hourly_forecast: 'Hourly Forecast',
-    daily_forecast: '5-Day Daily',
+    daily_forecast: '7-Day Forecast',
     good: 'Good',
     fair: 'Fair',
     moderate: 'Moderate',
     poor: 'Poor',
     very_poor: 'Very Poor',
-    unknown: 'Unknown'
+    unknown: 'Unknown',
+    alert_source: 'Source',
+    astronomy: 'Astronomy',
+    sunrise: 'Sunrise',
+    sunset: 'Sunset',
+    moon_phase: 'Moon Phase'
   },
   ko: {
     title: '날씨',
@@ -37,13 +44,18 @@ const translations = {
     feels_like: '체감 온도',
     aqi: '대기질',
     hourly_forecast: '시간별 예보',
-    daily_forecast: '5일 예보',
+    daily_forecast: '주간 예보 (7일)',
     good: '좋음',
     fair: '보통',
     moderate: '주의',
     poor: '나쁨',
     very_poor: '매우 나쁨',
-    unknown: '알 수 없음'
+    unknown: '알 수 없음',
+    alert_source: '출처',
+    astronomy: '천문 정보',
+    sunrise: '일출',
+    sunset: '일몰',
+    moon_phase: '달의 위상'
   },
   de: {
     title: 'Wetter',
@@ -56,13 +68,18 @@ const translations = {
     feels_like: 'Gefühlt',
     aqi: 'Luftqualität',
     hourly_forecast: 'Stündliche Vorhersage',
-    daily_forecast: '5-Tage Vorhersage',
+    daily_forecast: '7-Tage Vorhersage',
     good: 'Gut',
     fair: 'Okay',
     moderate: 'Mäßig',
     poor: 'Schlecht',
     very_poor: 'Sehr schlecht',
-    unknown: 'Unbekannt'
+    unknown: 'Unbekannt',
+    alert_source: 'Quelle',
+    astronomy: 'Astronomie',
+    sunrise: 'Sonnenaufgang',
+    sunset: 'Sonnenuntergang',
+    moon_phase: 'Mondphase'
   },
   ja: {
     title: '天気',
@@ -75,13 +92,18 @@ const translations = {
     feels_like: '体感温度',
     aqi: '空気質',
     hourly_forecast: '時間ごとの予報',
-    daily_forecast: '5日間の予報',
+    daily_forecast: '7日間の予報',
     good: '良い',
     fair: '普通',
     moderate: '並',
     poor: '悪い',
     very_poor: '非常に悪い',
-    unknown: '不明'
+    unknown: '不明',
+    alert_source: 'ソース',
+    astronomy: '天文学',
+    sunrise: '日の出',
+    sunset: '日の入り',
+    moon_phase: '月相'
   },
   fr: {
     title: 'Météo',
@@ -94,13 +116,18 @@ const translations = {
     feels_like: 'Ressenti',
     aqi: 'QAI',
     hourly_forecast: 'Prévisions horaires',
-    daily_forecast: 'Prévisions sur 5 jours',
+    daily_forecast: 'Prévisions sur 7 jours',
     good: 'Bon',
     fair: 'Correct',
     moderate: 'Modéré',
     poor: 'Mauvais',
     very_poor: 'Très mauvais',
-    unknown: 'Inconnu'
+    unknown: 'Inconnu',
+    alert_source: 'Source',
+    astronomy: 'Astronomie',
+    sunrise: 'Lever du soleil',
+    sunset: 'Coucher du soleil',
+    moon_phase: 'Phase de lune'
   },
   ar: {
     title: 'الطقس',
@@ -113,13 +140,18 @@ const translations = {
     feels_like: 'شعور بـ',
     aqi: 'جودة الهواء',
     hourly_forecast: 'توقعات كل ساعة',
-    daily_forecast: 'توقعات لـ 5 أيام',
+    daily_forecast: 'توقعات لـ 7 أيام',
     good: 'جيد',
     fair: 'مقبول',
     moderate: 'متوسط',
     poor: 'سيء',
     very_poor: 'سيء جداً',
-    unknown: 'غير معروف'
+    unknown: 'غير معروف',
+    alert_source: 'المصدر',
+    astronomy: 'الفلك',
+    sunrise: 'شروق الشمس',
+    sunset: 'غروب الشمس',
+    moon_phase: 'طور القمر'
   },
   ru: {
     title: 'Погода',
@@ -132,13 +164,18 @@ const translations = {
     feels_like: 'Ощущается',
     aqi: 'ИКВ',
     hourly_forecast: 'Почасовой прогноз',
-    daily_forecast: 'Прогноз на 5 дней',
+    daily_forecast: 'Прогноз на 7 дней',
     good: 'Хорошо',
     fair: 'Нормально',
     moderate: 'Средне',
     poor: 'Плохо',
     very_poor: 'Очень плохо',
-    unknown: 'Неизвестно'
+    unknown: 'Неизвестно',
+    alert_source: 'Источник',
+    astronomy: 'Астрономия',
+    sunrise: 'Восход',
+    sunset: 'Закат',
+    moon_phase: 'Фаза луны'
   },
   es: {
     title: 'Tiempo',
@@ -151,13 +188,18 @@ const translations = {
     feels_like: 'Sensación',
     aqi: 'ICA',
     hourly_forecast: 'Pronóstico por hora',
-    daily_forecast: 'Pronóstico de 5 días',
+    daily_forecast: 'Pronóstico de 7 días',
     good: 'Bueno',
     fair: 'Aceptable',
     moderate: 'Moderado',
     poor: 'Malo',
     very_poor: 'Muy malo',
-    unknown: 'Desconocido'
+    unknown: 'Desconocido',
+    alert_source: 'Fuente',
+    astronomy: 'Astronomía',
+    sunrise: 'Amanecer',
+    sunset: 'Puesta de sol',
+    moon_phase: 'Fase lunar'
   },
   zh: {
     title: '天气',
@@ -170,13 +212,18 @@ const translations = {
     feels_like: '体感温度',
     aqi: '空气质量',
     hourly_forecast: '每小时预报',
-    daily_forecast: '5天预报',
+    daily_forecast: '7天预报',
     good: '优',
     fair: '良',
     moderate: '中',
     poor: '差',
     very_poor: '极差',
-    unknown: '未知'
+    unknown: '未知',
+    alert_source: '来源',
+    astronomy: '天文信息',
+    sunrise: '日出',
+    sunset: '日落',
+    moon_phase: '月相'
   }
 };
 
@@ -396,7 +443,13 @@ function App() {
           </div>
         )}
 
+        {/* Weather Alerts if any */}
+        {currentWeather && currentWeather.alerts && (
+          <Alerts alerts={currentWeather.alerts} t={t} />
+        )}
+
         {currentWeather && <CurrentWeather data={currentWeather} unit={unit} airQuality={airQuality} lang={lang} t={t} />}
+
         {currentWeather && (
           <WeatherMap
             lat={currentWeather.coord.lat}
@@ -405,7 +458,13 @@ function App() {
             onMapClick={(lat, lon) => handleSearch({ lat, lon })}
           />
         )}
+
         {forecast && <Forecast data={forecast} unit={unit} lang={lang} t={t} />}
+
+        {/* Astronomy Section */}
+        {currentWeather && currentWeather.astro && (
+          <Astronomy astro={currentWeather.astro} t={t} />
+        )}
       </div>
     </Layout>
   );
