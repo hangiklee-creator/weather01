@@ -18,7 +18,9 @@ L.Marker.prototype.options.icon = DefaultIcon;
 // Internal component to update map center when props change
 const MapUpdater = ({ lat, lon }) => {
     const map = useMap();
-    map.setView([lat, lon], map.getZoom());
+    React.useEffect(() => {
+        map.setView([lat, lon], map.getZoom());
+    }, [lat, lon, map]);
     return null;
 };
 
