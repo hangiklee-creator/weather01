@@ -104,7 +104,9 @@ const Forecast = ({ data, unit, lang, t }) => {
             }}>
                 {dailyForecast.map((item, index) => {
                     const date = new Date(item.dt * 1000);
-                    const dayName = date.toLocaleDateString(locale, { weekday: 'short' });
+                    const dayNum = date.getDate();
+                    const weekday = date.toLocaleDateString(locale, { weekday: 'short' });
+                    const formattedDate = `${dayNum}(${weekday})`;
 
                     return (
                         <div key={index} style={{
@@ -119,7 +121,7 @@ const Forecast = ({ data, unit, lang, t }) => {
                             gap: '0.5rem',
                             border: '1px solid rgba(255, 255, 255, 0.2)'
                         }}>
-                            <span style={{ fontSize: '1rem', fontWeight: 'bold' }}>{dayName}</span>
+                            <span style={{ fontSize: '1rem', fontWeight: 'bold' }}>{formattedDate}</span>
                             <img
                                 src={`https://openweathermap.org/img/wn/${item.weather.icon}.png`}
                                 alt={item.weather.main}
