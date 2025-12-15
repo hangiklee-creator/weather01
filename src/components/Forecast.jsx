@@ -1,7 +1,10 @@
 import React from 'react';
 
 const Forecast = ({ data, unit, lang, t }) => {
-    if (!data || !data.list) return null;
+    // data structure is now { hourly: [...], daily: [...], city: {...} } from weatherService generic adapter
+    if (!data || !data.hourly || !data.daily) return null;
+
+    const { hourly, daily } = data;
 
     const displayTemp = (temp) => {
         if (unit === 'F') {
@@ -23,47 +26,6 @@ const Forecast = ({ data, unit, lang, t }) => {
     };
     const locale = localeMap[lang] || 'en-US';
 
-    // 1. Hourly Forecast section (first 5 intervals ~ 15 hours)
-    const hourlyForecast = data.list.slice(0, 5);
-
-    // 2. Daily Forecast section (aggregating by day for Min/Max)
-    // 2. Daily Forecast section (aggregating by day for Min/Max)
-    // Use City Timezone to group by LOCAL day, not UTC day
-    const timezoneOffset = data.city ? data.city.timezone : 0;
-    const dailyGroups = {};
-
-    data.list.forEach((item) => {
-        // Shift UTC timestamp to Local Timestamp (in seconds)
-        // new Date with this shifted timestamp will show the correct LOCAL time components in UTC methods
-        const localTimestamp = item.dt + timezoneOffset;
-        const localDate = new Date(localTimestamp * 1000);
-
-        // Use ISO string to get YYYY-MM-DD. Since we shifted the time, we treat it as if it were UTC to extract components.
-        const dateStr = localDate.toISOString().split('T')[0];
-
-        if (!dailyGroups[dateStr]) {
-            dailyGroups[dateStr] = [];
-        }
-        dailyGroups[dateStr].push(item);
-    });
-
-    // Convert groups map to array and take up to 5 days
-    const dailyForecast = Object.keys(dailyGroups).slice(0, 5).map(dateStr => {
-        const items = dailyGroups[dateStr];
-        // Find min and max temp in this day's items
-        const minTemp = Math.min(...items.map(i => i.main.temp_min));
-        const maxTemp = Math.max(...items.map(i => i.main.temp_max));
-        // Use the middle item for icon/description as a representative
-        const representative = items[Math.floor(items.length / 2)];
-
-        return {
-            dt: representative.dt,
-            min: minTemp,
-            max: maxTemp,
-            weather: representative.weather[0]
-        };
-    });
-
     return (
         <div style={{ marginTop: '2rem', width: '100%' }}>
 
@@ -75,10 +37,9 @@ const Forecast = ({ data, unit, lang, t }) => {
                 overflowX: 'auto',
                 paddingBottom: '1rem',
                 marginBottom: '2rem',
-                direction: 'ltr' // Scrolling usually feels better LTR even in RTL layouts for timelines, but strict RTL might prefer RTL. 
-                // However, standard scrollbars are easiest to manage LTR for this horizontal list.
+                direction: 'ltr'
             }}>
-                {hourlyForecast.map((item, index) => (
+                {hourly.map((item, index) => (
                     <div key={index} style={{
                         background: 'rgba(255, 255, 255, 0.1)',
                         padding: '1rem',
@@ -92,14 +53,15 @@ const Forecast = ({ data, unit, lang, t }) => {
                         border: '1px solid rgba(255, 255, 255, 0.1)'
                     }}>
                         <span style={{ fontSize: '0.8rem', opacity: 0.8 }}>
-                            {new Date(item.dt * 1000).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })}
+                            {/* item.time is "YYYY-MM-DD HH:MM", we just want HH:MM */}
+                            {item.time.split(' ')[1]}
                         </span>
                         <img
-                            src={`https://openweathermap.org/img/wn/${item.weather[0].icon}.png`}
-                            alt={item.weather[0].main}
+                            src={item.icon}
+                            alt={item.condition}
                             style={{ width: '35px', height: '35px' }}
                         />
-                        <span style={{ fontWeight: 'bold' }}>{displayTemp(item.main.temp)}°</span>
+                        <span style={{ fontWeight: 'bold' }}>{displayTemp(item.temp)}°</span>
                     </div>
                 ))}
             </div>
@@ -113,74 +75,45 @@ const Forecast = ({ data, unit, lang, t }) => {
                 paddingBottom: '0.5rem',
                 direction: 'ltr'
             }}>
-                {dailyForecast.map((item, index) => {
-                    {
-                        dailyForecast.map((item, index) => {
-                            // Adjust to local time for display as well
-                            const timezoneOffset = data.city ? data.city.timezone : 0;
-                            const localTimestamp = item.dt + timezoneOffset;
-                            // Created "shifted" date object that behaves like UTC but holds local time
-                            // We must use UTC methods to read it to match the grouping logic
-                            const date = new Date(localTimestamp * 1000);
+                {daily.map((item, index) => {
+                    const date = new Date(item.date);
+                    // item.date is "YYYY-MM-DD", which creates a UTC date at midnight? 
+                    // Or local midnight? Browser treats "YYYY-MM-DD" as UTC usually.
+                    // Actually, if we just want "Day(Weekday)", we can parse the parts manually or use UTC methods to be safe.
+                    // Let's use string parts for dayNum to be robust against timezone shifts.
+                    const dayNum = item.date.split('-')[2];
 
-                            const dayNum = date.getUTCDate();
-                            // map 'short' weekday manually or hack locale? 
-                            // Actually, toLocaleDateString might be tricky with shifted time if we want exact weekday.
-                            // Better approach: use the timestamp directly with the timezone logic if possible.
-                            // But 'toLocaleDateString' uses browser timezone.
-                            // Let's stick to the simpler approach: The original item.dt is correct UTC. 
-                            // We just needed to GROUP them correctly. 
-                            // For finding the weekday name of the GROUP, we can just use the representative item.dt normally.
-                            // Wait, if 02:00 UTC is 11:00 KST (same day), and 22:00 UTC is 07:00 KST (Next Day).
-                            // If we grouped by KST, the 'representative' item should arguably be one from the middle of the KST day.
-                            // So using item.dt (UTC) is fine, as long as the grouping is correct.
-                            // However, we want to display the *Local* day name.
-                            // If the group represents "Thursday (KST)", but the representative item is 23:00 Wednesday (UTC),
-                            // Converting 23:00 Wed UTC to Browser Local (e.g. user in Korea) -> Thursday 08:00 KST. WIll work.
-                            // BUT if user checks New York weather from Korea? 
-                            // 23:00 Wed UTC -> 08:00 Thu KST. 
-                            // But New York is -5 UTC. -> 18:00 Wed EST. 
-                            // So for New York, it should be Wednesday.
-                            // So we MUST use the timezone offset for display too.
+                    // For weekday, we can use the date object.
+                    const weekday = date.toLocaleDateString(locale, { weekday: 'short', timeZone: 'UTC' });
 
-                            const shiftedDate = new Date((item.dt + timezoneOffset) * 1000);
-                            // Use UTC methods on shifted date to get "Local" components
-                            const dayNumDisplay = shiftedDate.getUTCDate();
+                    const formattedDate = `${parseInt(dayNum)}(${weekday})`; // parseInt to remove leading zero if desired e.g. 05 -> 5
 
-                            // Limited hack for weekday name in different locales without full Intl timezone support (which is complex to map from offset)
-                            // We can just use the shifted date and force UTC? 
-                            // 'en-US' locale with timeZone: 'UTC' on the shifted date should give the correct weekday name!
-                            const weekday = shiftedDate.toLocaleDateString(locale, { weekday: 'short', timeZone: 'UTC' });
-
-                            const formattedDate = `${dayNumDisplay}(${weekday})`;
-
-                            return (
-                                <div key={index} style={{
-                                    background: 'rgba(255, 255, 255, 0.15)', // slightly distinct bg
-                                    padding: '1rem',
-                                    borderRadius: '12px',
-                                    minWidth: '90px',
-                                    textAlign: 'center',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    gap: '0.5rem',
-                                    border: '1px solid rgba(255, 255, 255, 0.2)'
-                                }}>
-                                    <span style={{ fontSize: '1rem', fontWeight: 'bold' }}>{formattedDate}</span>
-                                    <img
-                                        src={`https://openweathermap.org/img/wn/${item.weather.icon}.png`}
-                                        alt={item.weather.main}
-                                        style={{ width: '40px', height: '40px' }}
-                                    />
-                                    <div style={{ display: 'flex', gap: '8px', fontSize: '1.1rem' }}>
-                                        <span style={{ opacity: 0.6 }}>{displayTemp(item.min)}°</span>
-                                        <span style={{ fontWeight: 'bold' }}>{displayTemp(item.max)}°</span>
-                                    </div>
-                                </div>
-                            );
-                        })
-                    }
+                    return (
+                        <div key={index} style={{
+                            background: 'rgba(255, 255, 255, 0.15)',
+                            padding: '1rem',
+                            borderRadius: '12px',
+                            minWidth: '90px',
+                            textAlign: 'center',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            border: '1px solid rgba(255, 255, 255, 0.2)'
+                        }}>
+                            <span style={{ fontSize: '1rem', fontWeight: 'bold' }}>{formattedDate}</span>
+                            <img
+                                src={item.icon}
+                                alt={item.condition}
+                                style={{ width: '40px', height: '40px' }}
+                            />
+                            <div style={{ display: 'flex', gap: '8px', fontSize: '1.1rem' }}>
+                                <span style={{ opacity: 0.6 }}>{displayTemp(item.min)}°</span>
+                                <span style={{ fontWeight: 'bold' }}>{displayTemp(item.max)}°</span>
+                            </div>
+                        </div>
+                    );
+                })}
             </div>
         </div>
     );

@@ -218,22 +218,15 @@ function App() {
 
     try {
       let weatherData, forecastData;
-      let lat, lon, cityName;
+      let lat, lon;
 
       // Determine Coordinates
       if (typeof searchData === 'object' && searchData.lat && searchData.lon) {
         // From Autocomplete or Location Button
         lat = searchData.lat;
         lon = searchData.lon;
-        cityName = searchData.name;
-
-        // Try to use the localized name if available (passed from autocomplete)
-        if (searchData.local_names && searchData.local_names[lang]) {
-          cityName = searchData.local_names[lang];
-        }
       } else {
-        // From Manual Input (String)
-        // 1. Geocode the string first to get coordinates
+        // From Manual Input (String) - Autocomplete usually handles this, but for robustness:
         const results = await weatherService.searchCities(searchData);
         if (!results || results.length === 0) {
           throw new Error(t('error_fetch') + ": City not found");
@@ -241,33 +234,23 @@ function App() {
         const bestMatch = results[0];
         lat = bestMatch.lat;
         lon = bestMatch.lon;
-
-        // Use localized name from geocoding result if avail
-        cityName = bestMatch.name;
-        if (bestMatch.local_names && bestMatch.local_names[lang]) {
-          cityName = bestMatch.local_names[lang];
-        }
       }
 
-      // Map internal language codes to OWM API codes
-      let apiLang = lang;
-      if (lang === 'ko') apiLang = 'kr';
-      if (lang === 'zh') apiLang = 'zh_cn';
+      // Map internal language codes to API codes if needed (WeatherAPI supports most iso codes directly)
+      // 'ko' works fine. 'zh' might need 'zh_cn'? WeatherAPI docs say 'zh' is simplified Chinese.
 
-      // 2. Fetch Weather by Coordinates (Always robust)
-      weatherData = await weatherService.getCurrentWeatherByCoords(lat, lon, apiLang);
-      forecastData = await weatherService.getForecastByCoords(lat, lon, apiLang);
+      // Fetch Data
+      weatherData = await weatherService.getCurrentWeatherByCoords(lat, lon, lang);
+      forecastData = await weatherService.getForecastByCoords(lat, lon, lang);
 
-      // Override the API-returned name with our best-known name (localized)
-      if (cityName) {
-        weatherData.name = cityName;
-      }
-
-      const airQualityData = await weatherService.getAirPollution(lat, lon);
+      // weatherData now contains AQI inside it as per our new service wrapper
+      setAirQuality(weatherData.aqi ? { list: [{ main: { aqi: weatherData.aqi } }] } : null); // Simple adapter if we kept old component logic, or we update component.
+      // Let's pass the simplified data directly. But CurrentWeather expects specific props.
+      // We will update CurrentWeather next. For now, set the state.
 
       setCurrentWeather(weatherData);
       setForecast(forecastData);
-      setAirQuality(airQualityData);
+
     } catch (err) {
       console.error(err);
       setError(err.message || t('error_fetch'));
