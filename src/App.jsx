@@ -303,13 +303,16 @@ function App() {
       <div className="flex-center" style={{ flexDirection: 'column', width: '100%', position: 'relative' }}>
 
         {/* Top Right Controls */}
+        {/* Top Header Controls */}
         <div style={{
-          position: 'absolute',
-          top: 0,
-          right: 0,
-          zIndex: 10,
+          width: '100%',
           display: 'flex',
-          gap: '12px'
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          gap: '12px',
+          marginBottom: '1rem',
+          // Remove absolute positioning to prevent overlap on mobile
+          position: 'static'
         }}>
           {/* Language Switcher Dropdown */}
           <div style={{

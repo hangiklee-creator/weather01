@@ -67,9 +67,9 @@ const CurrentWeather = ({ data, unit, airQuality, lang, t }) => {
 
             <div className="flex-center" style={{ marginBottom: '2rem' }}>
                 <img
-                    src={`https://openweathermap.org/img/wn/${weather[0].icon}@4x.png`}
+                    src={`https://openweathermap.org/img/wn/${weather[0].icon}@2x.png`}
                     alt={weather[0].description}
-                    style={{ width: '150px', height: '150px' }}
+                    style={{ width: '100px', height: '100px' }}
                 />
                 <div>
                     <h1 style={{ fontSize: '5rem', margin: 0, fontWeight: 'bold' }}>
