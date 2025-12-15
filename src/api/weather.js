@@ -1,5 +1,6 @@
 // Forced Update: Trigger Vercel Build for API Key Refresh
-const API_KEY = import.meta.env.VITE_WEATHER_API_KEY || '';
+// TEMPORARY DEBUG: Hardcoding key to bypass Vercel Env Var issue
+const API_KEY = '4af16740a6a14cdcb9b113245251512';
 const BASE_URL = 'https://api.weatherapi.com/v1';
 
 // Internal helper to map WeatherAPI condition codes/icons to generic internal state or Keep them as is.
