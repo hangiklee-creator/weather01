@@ -5,6 +5,7 @@ import CurrentWeather from './components/CurrentWeather';
 import Forecast from './components/Forecast';
 import WeatherMap from './components/WeatherMap';
 import Alerts from './components/Alerts';
+import AdBanner from './components/AdBanner';
 import Astronomy from './components/Astronomy';
 import { weatherService } from './api/weather';
 
@@ -460,6 +461,11 @@ function App() {
         )}
 
         {forecast && <Forecast data={forecast} unit={unit} lang={lang} t={t} />}
+
+        {/* Smart Ad Banner */}
+        {currentWeather && (
+          <AdBanner weather={currentWeather} t={t} lang={lang} />
+        )}
 
         {/* Astronomy Section */}
         {currentWeather && currentWeather.astro && (
